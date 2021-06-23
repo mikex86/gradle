@@ -21,7 +21,6 @@ import org.gradle.integtests.tooling.fixture.ToolingApiSpecification
 import org.gradle.integtests.tooling.fixture.ToolingApiVersion
 import org.gradle.tooling.BuildActionExecuter
 import org.gradle.tooling.GradleConnectionException
-import org.gradle.tooling.ModelBuilder
 import org.gradle.tooling.ResultHandler
 import org.gradle.tooling.UnsupportedVersionException
 import spock.lang.Unroll

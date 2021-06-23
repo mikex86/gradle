@@ -23,7 +23,6 @@ import org.gradle.integtests.tooling.fixture.ToolingApiVersion
 import org.gradle.tooling.BuildActionExecuter
 import org.gradle.tooling.BuildActionFailureException
 import org.gradle.tooling.BuildException
-import org.gradle.tooling.ModelBuilder
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.events.OperationType
 import org.gradle.tooling.events.ProgressEvent
