@@ -20,6 +20,7 @@ import org.gradle.integtests.fixtures.executer.OutputScrapingExecutionFailure
 import org.gradle.integtests.tooling.fixture.TargetGradleVersion
 import org.gradle.integtests.tooling.fixture.ToolingApiSpecification
 import org.gradle.integtests.tooling.fixture.ToolingApiVersion
+import org.gradle.tooling.BuildActionExecuter
 import org.gradle.tooling.BuildActionFailureException
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.ModelBuilder
@@ -331,9 +332,9 @@ class PhasedBuildActionCrossVersionSpec extends ToolingApiSpecification {
 
         where:
         description                 | action
-        "no task names specified"   | { ModelBuilder b -> }
-        "empty array of task names" | { ModelBuilder b -> b.forTasks() }
-        "empty list of task names"  | { ModelBuilder b -> b.forTasks([]) }
+        "no task names specified"   | { BuildActionExecuter b -> }
+        "empty array of task names" | { BuildActionExecuter b -> b.forTasks() }
+        "empty list of task names"  | { BuildActionExecuter b -> b.forTasks([]) }
     }
 
     @TargetGradleVersion(">=2.6 <4.8")
