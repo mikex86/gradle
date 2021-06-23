@@ -43,6 +43,6 @@ interface PrecompiledScriptPluginsSupport {
         val project: Project
         val kotlinSourceDirectorySet: SourceDirectorySet
         val kotlinCompileTask: TaskProvider<out Task>
-        fun applyKotlinCompilerArgs(args: List<String>)
+        fun applyKotlinCompilerArgs(args: List<String>) // HERE
     }
 }

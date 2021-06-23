@@ -21,6 +21,7 @@ import org.gradle.test.fixtures.file.LeaksFileHandles
 import org.gradle.test.fixtures.file.TestFile
 
 import org.gradle.kotlin.dsl.tooling.builders.AbstractKotlinScriptModelCrossVersionTest
+import spock.lang.IgnoreRest
 
 import static org.hamcrest.CoreMatchers.hasItems
 import static org.hamcrest.CoreMatchers.startsWith
@@ -76,7 +77,7 @@ class PrecompiledScriptPluginModelCrossVersionSpec extends AbstractKotlinScriptM
         and:
         withDefaultSettings().append("""
             include("project-a")
-            include("project-b")        
+            include("project-b")
         """.stripIndent())
 
         and:
@@ -102,6 +103,7 @@ class PrecompiledScriptPluginModelCrossVersionSpec extends AbstractKotlinScriptM
         )
     }
 
+    @IgnoreRest
     def "implicit imports include type-safe accessors packages"() {
 
         given:
