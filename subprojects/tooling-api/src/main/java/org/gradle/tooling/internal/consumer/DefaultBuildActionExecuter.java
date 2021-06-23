@@ -27,10 +27,8 @@ import org.gradle.tooling.internal.consumer.async.AsyncConsumerActionExecutor;
 import org.gradle.tooling.internal.consumer.connection.ConsumerAction;
 import org.gradle.tooling.internal.consumer.connection.ConsumerConnection;
 import org.gradle.tooling.internal.consumer.parameters.ConsumerOperationParameters;
-import org.gradle.util.internal.CollectionUtils;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 
 class DefaultBuildActionExecuter<T> extends AbstractLongRunningOperation<DefaultBuildActionExecuter<T>> implements BuildActionExecuter<T> {
     private final BuildAction<T> buildAction;
@@ -50,13 +48,13 @@ class DefaultBuildActionExecuter<T> extends AbstractLongRunningOperation<Default
 
     @Override
     public BuildActionExecuter<T> forTasks(String... tasks) {
-        operationParamsBuilder.setTasks(tasks != null ? Arrays.asList(tasks) : null);
+        operationParamsBuilder.setTasks(rationalizeInput(tasks));
         return getThis();
     }
 
     @Override
     public BuildActionExecuter<T> forTasks(Iterable<String> tasks) {
-        operationParamsBuilder.setTasks(tasks != null ? CollectionUtils.toList(tasks) : null);
+        operationParamsBuilder.setTasks(rationalizeInput(tasks));
         return getThis();
     }
 

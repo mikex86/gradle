@@ -19,9 +19,12 @@ package org.gradle.integtests.tooling.r35
 import org.gradle.integtests.tooling.fixture.TargetGradleVersion
 import org.gradle.integtests.tooling.fixture.ToolingApiSpecification
 import org.gradle.integtests.tooling.fixture.ToolingApiVersion
+import org.gradle.tooling.BuildActionExecuter
 import org.gradle.tooling.GradleConnectionException
+import org.gradle.tooling.ModelBuilder
 import org.gradle.tooling.ResultHandler
 import org.gradle.tooling.UnsupportedVersionException
+import spock.lang.Unroll
 
 import java.util.regex.Pattern
 
@@ -68,6 +71,36 @@ class RunTasksBeforeRunActionCrossVersion extends ToolingApiSpecification {
         Pattern regex = Pattern.compile(".*hello.*bye.*starting action.*", Pattern.DOTALL)
         assert stdOut.toString().matches(regex)
         assert result == "Action result"
+    }
+
+    @Unroll
+    @TargetGradleVersion('>=3.5')
+    def "#description means do not run any tasks"() {
+        file('build.gradle') << """
+            defaultTasks = ["broken"]
+
+            gradle.taskGraph.whenReady {
+                throw new RuntimeException()
+            }
+        """
+
+        when:
+        withConnection { connection ->
+            def builder = connection.action(new SimpleAction())
+            action(builder)
+            collectOutputs(builder)
+            builder.run()
+        }
+
+        then:
+        noExceptionThrown()
+        stdout.toString().contains("CONFIGURE SUCCESSFUL")
+
+        where:
+        description                 | action
+        "no task names specified"   | { BuildActionExecuter b -> }
+        "empty array of task names" | { BuildActionExecuter b -> b.forTasks() }
+        "empty list of task names"  | { BuildActionExecuter b -> b.forTasks([]) }
     }
 
     @TargetGradleVersion(">=2.6 <3.5")

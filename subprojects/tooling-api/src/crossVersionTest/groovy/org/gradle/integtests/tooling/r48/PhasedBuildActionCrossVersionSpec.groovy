@@ -22,10 +22,12 @@ import org.gradle.integtests.tooling.fixture.ToolingApiSpecification
 import org.gradle.integtests.tooling.fixture.ToolingApiVersion
 import org.gradle.tooling.BuildActionFailureException
 import org.gradle.tooling.BuildException
+import org.gradle.tooling.ModelBuilder
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.events.OperationType
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.ProgressListener
+import spock.lang.Unroll
 
 import java.util.regex.Pattern
 
@@ -303,22 +305,35 @@ class PhasedBuildActionCrossVersionSpec extends ToolingApiSpecification {
     }
 
     @TargetGradleVersion(">=4.8")
-    def "default tasks are not run if no tasks are specified"() {
-        IntermediateResultHandlerCollector buildFinishedHandler = new IntermediateResultHandlerCollector()
-        def stdOut = new ByteArrayOutputStream()
+    @Unroll
+    def "#description means do not run any tasks"() {
+        file('build.gradle') << """
+            defaultTasks = ["broken"]
+
+            gradle.taskGraph.whenReady {
+                throw new RuntimeException()
+            }
+        """
 
         when:
         withConnection { connection ->
-            connection.action().buildFinished(new CustomBuildFinishedAction(), buildFinishedHandler)
+            def builder = connection.action()
+                .buildFinished(new CustomBuildFinishedAction(), new IntermediateResultHandlerCollector())
                 .build()
-                .setStandardOutput(stdOut)
-                .run()
+            action(builder)
+            collectOutputs(builder)
+            builder.run()
         }
 
         then:
-        buildFinishedHandler.getResult() == "build"
-        stdOut.toString().contains("buildFinishedAction")
-        !stdOut.toString().contains("default")
+        noExceptionThrown()
+        stdout.toString().contains("CONFIGURE SUCCESSFUL")
+
+        where:
+        description                 | action
+        "no task names specified"   | { ModelBuilder b -> }
+        "empty array of task names" | { ModelBuilder b -> b.forTasks() }
+        "empty list of task names"  | { ModelBuilder b -> b.forTasks([]) }
     }
 
     @TargetGradleVersion(">=2.6 <4.8")

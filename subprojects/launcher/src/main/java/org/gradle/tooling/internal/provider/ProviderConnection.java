@@ -160,11 +160,13 @@ public class ProviderConnection {
 
     public Object runClientAction(Object clientAction, BuildCancellationToken cancellationToken, ProviderOperationParameters providerParameters) {
         List<String> tasks = providerParameters.getTasks();
+        // The consumer should pass a null value when tasks should not run, but versions <7.2 can in some cases pass an empty list instead
+        boolean runTasks = tasks != null && !tasks.isEmpty();
         SerializedPayload serializedAction = payloadSerializer.serialize(clientAction);
         Parameters params = initParams(providerParameters);
         StartParameterInternal startParameter = new ProviderStartParameterConverter().toStartParameter(providerParameters, params.buildLayout, params.properties);
         ProgressListenerConfiguration listenerConfig = ProgressListenerConfiguration.from(providerParameters, consumerVersion);
-        BuildAction action = new ClientProvidedBuildAction(startParameter, serializedAction, tasks != null, listenerConfig.clientSubscriptions);
+        BuildAction action = new ClientProvidedBuildAction(startParameter, serializedAction, runTasks, listenerConfig.clientSubscriptions);
         return run(action, cancellationToken, listenerConfig, listenerConfig.buildEventConsumer, providerParameters, params);
     }
 
